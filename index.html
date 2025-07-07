@@ -303,30 +303,33 @@ const mensaje = document.getElementById("mensaje");
     }
 
 buscador.addEventListener("input", () => {
-  indiceSeleccionado = -1;
-  const texto = buscador.value.trim().toLowerCase();
+  const texto = buscador.value.trim();
   resultados.innerHTML = "";
+
   if (texto.length < 3) return;
 
-  productosPermitidos.forEach(producto => {
-    if (producto.concepto.toLowerCase().includes(texto)) {
-      const div = document.createElement("div");
-      div.textContent = ${producto.concepto};
-      div.onclick = () => seleccionarProducto(producto);  // ✅ solo esto
-      resultados.appendChild(div);
-    }
-  });
+  const producto = productosPermitidos.find(p => p.id === texto);
+
+  if (producto) {
+    seleccionarProducto(producto);
+  } else {
+    const div = document.createElement("div");
+    div.textContent = "Código no encontrado";
+    resultados.appendChild(div);
+  }
+});
 });
 
 function seleccionarProducto(producto) {
-  buscador.value = producto.concepto;
+  buscador.value = producto.id; // mostrar código
   descripcion.value = producto.concepto;
   costo.value = producto.costo;
-  resultados.innerHTML = "";
 
-  setTimeout(() => {
-    cantidad.focus();
-  }, 10); // pequeño delay para asegurar el render
+  document.getElementById("vistaDescripcion").textContent = producto.concepto;
+  document.getElementById("vistaCosto").textContent = `$${producto.costo}`;
+
+  resultados.innerHTML = "";
+  setTimeout(() => cantidad.focus(), 10);
 }
 
 let indiceSeleccionado = -1;
