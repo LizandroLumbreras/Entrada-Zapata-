@@ -298,10 +298,7 @@ const mensaje = document.getElementById("mensaje");
     async function cargarProductosPermitidos() {
       const snapshot = await db.collection("productos").get();
       productosPermitidos = snapshot.docs
-        .filter(doc => codigosPermitidos.includes(doc.id))
-        .map(doc => ({ id: doc.id, concepto: doc.data().Concepto || "", costo: doc.data()["Costo sin Impuesto"] || 0 }));
-    }
-
+      
 buscador.addEventListener("input", () => {
   const texto = buscador.value.trim();
   resultados.innerHTML = "";
@@ -317,7 +314,6 @@ buscador.addEventListener("input", () => {
     div.textContent = "Código no encontrado";
     resultados.appendChild(div);
   }
-});
 });
 
 function seleccionarProducto(producto) {
@@ -453,23 +449,24 @@ function eliminarProducto(index) {
   renderizarVistaMovil();
 }
 function agregarProductoTemporal() {
-  const descripcionInput = document.getElementById("codigoProducto").value.trim().toLowerCase();
-  const cantidadInput = parseInt(document.getElementById("cantidadProducto").value.trim());
+const codigoInput = document.getElementById("codigoProducto").value.trim();
+const cantidadInput = parseInt(document.getElementById("cantidadProducto").value.trim());
 
-  if (!descripcionInput || isNaN(cantidadInput) || cantidadInput <= 0) {
-    alert("Debes ingresar un código válido y una cantidad mayor a 0.");
-    return;
-  }
+if (!codigoInput || isNaN(cantidadInput) || cantidadInput <= 0) {
+  alert("Debes ingresar un código válido y una cantidad mayor a 0.");
+  return;
+}
 
-  const producto = productosPermitidos.find(p => p.concepto.toLowerCase() === descripcionInput);
-  if (!producto) {
-    alert("El código ingresado no está permitido o no existe.");
-    return;
-  }
+const producto = productosPermitidos.find(p => p.id === codigoInput);
+if (!producto) {
+  alert("El código ingresado no está permitido o no existe.");
+  return;
+}
+
 
   // Mostrar descripción y costo al usuario (en los <span>)
   document.getElementById("vistaDescripcion").textContent = producto.concepto;
-  document.getElementById("vistaCosto").textContent = $${producto.costo};
+  document.getElementById("vistaCosto").textContent = `$${producto.costo}`;
 
   // Rellenar los campos ocultos
   document.getElementById("descripcionProducto").value = producto.concepto;
